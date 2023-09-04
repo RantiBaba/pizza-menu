@@ -1,75 +1,123 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-
-const pizzaData = [
-  {
-    name: "Focaccia",
-    ingredients: "Bread with italian olive oil and rosemary",
-    price: 6,
-    photoName: "pizzas/focaccia.jpg",
-    soldOut: false,
-  },
-  {
-    name: "Pizza Margherita",
-    ingredients: "Tomato and mozarella",
-    price: 10,
-    photoName: "pizzas/margherita.jpg",
-    soldOut: false,
-  },
-  {
-    name: "Pizza Spinaci",
-    ingredients: "Tomato, mozarella, spinach, and ricotta cheese",
-    price: 12,
-    photoName: "pizzas/spinaci.jpg",
-    soldOut: false,
-  },
-  {
-    name: "Pizza Funghi",
-    ingredients: "Tomato, mozarella, mushrooms, and onion",
-    price: 12,
-    photoName: "pizzas/funghi.jpg",
-    soldOut: false,
-  },
-  {
-    name: "Pizza Salamino",
-    ingredients: "Tomato, mozarella, and pepperoni",
-    price: 15,
-    photoName: "pizzas/salamino.jpg",
-    soldOut: true,
-  },
-  {
-    name: "Pizza Prosciutto",
-    ingredients: "Tomato, mozarella, ham, aragula, and burrata cheese",
-    price: 18,
-    photoName: "pizzas/prosciutto.jpg",
-    soldOut: false,
-  },
-];
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import pizzaData from './data';
+import './index.css';
 
 const App = () => {
   return (
-    <div>
-      <h1>Hello React!</h1>
-      <Pizza />
-      <Pizza />
-      <Pizza />
+    <div className='container'>
+      <Header />
+      <Menu />
+      <Footer />
     </div>
   );
 };
 
-const Pizza = () => {
+const Header = () => {
+  const style = {};
   return (
-    <div>
-      <img src="pizzas/spinaci.jpg" alt="spinaci" />
-      <h2>Pizza Spinaci</h2>
-      <p>Tomato, mozarella, spinach, and ricotta cheese</p>
+    <header className='header'>
+      <h1 data-testid='header' style={style}>
+        Sarumi Pizza Co.
+      </h1>
+    </header>
+  );
+};
+
+const Menu = () => {
+  const pizzas = pizzaData;
+  const pizzaNumber = pizzas.length;
+
+  return (
+    <main data-testid='menu-list' className='menu'>
+      <h2>Our Menu</h2>
+
+      {pizzaNumber > 0 ? (
+        <>
+          <p>
+            Authentic Italian cuisine. 6 creative dishes to choose from. Al from
+            our stove oven, all organic, all delicious.
+          </p>
+          <ul className='pizzas'>
+            {pizzas.map(pizza => (
+              <Pizza
+                key={pizza.id}
+                photoName={pizza.photoName}
+                name={pizza.name}
+                ingredients={pizza.ingredients}
+                price={pizza.price}
+                soldOut={pizza.soldOut}
+              />
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p>Sorry, we're working on our menu. Pease come back later!</p>
+      )}
+    </main>
+  );
+};
+
+const Pizza = ({ photoName, name, ingredients, price, soldOut }) => {
+  // if (soldOut) {
+  //   return null;
+  // }
+
+  return (
+    <li
+      data-testid='pizza-menu'
+      className={`pizza ${soldOut ? 'sold-out' : ''}`}
+    >
+      <img src={photoName} alt={name} />
+      <div>
+        <h3 data-testid='pizza-name'>{name}</h3>
+        <p data-testid='pizza-ingredients'>{ingredients}</p>
+        <span data-testid={soldOut ? 'sold-out' : 'price'}>
+          {soldOut ? 'SOLD OUT' : price}
+        </span>
+      </div>
+    </li>
+  );
+};
+
+const Footer = () => {
+  const hour = new Date().getHours();
+  const openHour = 12;
+  const closeHour = 22;
+  const isOpen = hour >= openHour && hour <= closeHour;
+
+  return (
+    <footer className='footer' data-testid='footer'>
+      {isOpen ? (
+        <Order openHour={openHour} closeHour={closeHour} />
+      ) : (
+        <Closed openHour={openHour} />
+      )}
+    </footer>
+  );
+};
+
+const Order = ({ openHour, closeHour }) => {
+  return (
+    <div className='order'>
+      <p>
+        We're open from {openHour}:00 to {closeHour}:00. Come visit us or order
+        online.
+      </p>
+      <button className='btn'>Order now</button>
     </div>
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const Closed = ({ openHour }) => {
+  return <p>We're closed. We open at {openHour}:00.</p>;
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
+
+// Authentic Italian cuisine. 6 creative dishes to choose from. Al from our stove oven, all organic, all delicious.
